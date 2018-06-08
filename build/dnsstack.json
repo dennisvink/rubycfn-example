@@ -1,0 +1,73 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "DomainName": {
+      "Default": "example.com",
+      "Description": "Domain name for the HostedZone",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "HostedZone": {
+      "Properties": {
+        "HostedZoneConfig": {
+          "Comment": {
+            "Fn::Join": [
+              "",
+              [
+                "Hosted Zone for ",
+                {
+                  "Ref": "DomainName"
+                }
+              ]
+            ]
+          }
+        },
+        "Name": {
+          "Ref": "DomainName"
+        }
+      },
+      "Type": "AWS::Route53::HostedZone"
+    },
+    "HostedZoneSes": {
+      "DependsOn": [
+        "HostedZone"
+      ],
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "HostedZone"
+              },
+              "_SESConfigurationSet"
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::SES::ConfigurationSet"
+    }
+  },
+  "Outputs": {
+    "HostedZoneId": {
+      "Description": "HostedZoneId",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+                "Ref": "AWS::StackName"
+              },
+              "HostedZoneId"
+            ]
+          ]
+        }
+      },
+      "Value": {
+        "Ref": "HostedZone"
+      }
+    }
+  }
+}

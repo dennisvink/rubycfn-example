@@ -1,0 +1,35 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "MyS3Bucket": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket10": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket2": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket3": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket4": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket5": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket6": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket7": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket8": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "MyS3Bucket9": {
+      "Type": "AWS::S3::Bucket"
+    }
+  }
+}

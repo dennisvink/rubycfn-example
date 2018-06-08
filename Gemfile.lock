@@ -1,0 +1,30 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (5.1.6)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    concurrent-ruby (1.0.5)
+    i18n (1.0.1)
+      concurrent-ruby (~> 1.0)
+    json (2.1.0)
+    minitest (5.11.3)
+    neatjson (0.8.4)
+    rubycfn (0.0.1)
+      activesupport (~> 5.1.5)
+      json (~> 2.1.0)
+      neatjson (~> 0.8.4)
+    thread_safe (0.3.6)
+    tzinfo (1.2.5)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rubycfn (~> 0.0.1)!
+
+BUNDLED WITH
+   1.15.4
