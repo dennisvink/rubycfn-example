@@ -1,34 +1,65 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "S3 production stack",
   "Resources": {
     "MyS3Bucket": {
+      "Properties": {
+        "Name": "MyAmazingBucket1"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket10": {
+      "Properties": {
+        "Name": "MyAmazingBucket10"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket2": {
+      "Properties": {
+        "Name": "MyAmazingBucket2"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket3": {
+      "Properties": {
+        "Name": "MyAmazingBucket3"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket4": {
+      "Properties": {
+        "Name": "MyAmazingBucket4"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket5": {
+      "Properties": {
+        "Name": "MyAmazingBucket5"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket6": {
+      "Properties": {
+        "Name": "MyAmazingBucket6"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket7": {
+      "Properties": {
+        "Name": "MyAmazingBucket7"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket8": {
+      "Properties": {
+        "Name": "MyAmazingBucket8"
+      },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket9": {
+      "Properties": {
+        "Name": "MyAmazingBucket9"
+      },
       "Type": "AWS::S3::Bucket"
     }
   }

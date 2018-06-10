@@ -12,7 +12,7 @@ GEM
     json (2.1.0)
     minitest (5.11.3)
     neatjson (0.8.4)
-    rubycfn (0.0.1)
+    rubycfn (0.0.7)
       activesupport (~> 5.1.5)
       json (~> 2.1.0)
       neatjson (~> 0.8.4)
@@ -24,7 +24,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  rubycfn (~> 0.0.1)!
+  rubycfn (~> 0.0.7)!
 
 BUNDLED WITH
    1.15.4

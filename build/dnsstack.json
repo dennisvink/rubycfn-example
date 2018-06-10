@@ -1,9 +1,10 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Route53 production Stack",
   "Parameters": {
     "DomainName": {
       "Default": "example.com",
-      "Description": "Domain name for the HostedZone",
+      "Description": "Domain name for this HostedZone",
       "Type": "String"
     }
   },
@@ -15,7 +16,7 @@
             "Fn::Join": [
               "",
               [
-                "Hosted Zone for ",
+                "Hosted Zone for production ",
                 {
                   "Ref": "DomainName"
                 }
@@ -30,9 +31,6 @@
       "Type": "AWS::Route53::HostedZone"
     },
     "HostedZoneSes": {
-      "DependsOn": [
-        "HostedZone"
-      ],
       "Properties": {
         "Name": {
           "Fn::Join": [

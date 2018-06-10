@@ -5,7 +5,7 @@ module DnsStack
     included do
       parameter :domain_name,
                 default: "example.com",
-                description: "Domain name for the HostedZone"
+                description: "Domain name for this HostedZone"
     end
   end
 end
