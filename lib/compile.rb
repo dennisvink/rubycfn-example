@@ -5,6 +5,7 @@ FileUtils.mkdir_p 'build'
 stacks = {}
 Module.constants.select do |mod|
   if mod =~ /Stack$/
+    send("include", Object.const_get("SharedConcerns"))
     stacks[mod.to_sym] = send("include", Object.const_get(mod)).render_template
   end
 end

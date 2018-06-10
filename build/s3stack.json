@@ -4,62 +4,77 @@
   "Resources": {
     "MyS3Bucket": {
       "Properties": {
-        "Name": "MyAmazingBucket1"
+        "Name": "MyAmazingBucket1-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket10": {
       "Properties": {
-        "Name": "MyAmazingBucket10"
+        "Name": "MyAmazingBucket10-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket2": {
       "Properties": {
-        "Name": "MyAmazingBucket2"
+        "Name": "MyAmazingBucket2-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket3": {
       "Properties": {
-        "Name": "MyAmazingBucket3"
+        "Name": "MyAmazingBucket3-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket4": {
       "Properties": {
-        "Name": "MyAmazingBucket4"
+        "Name": "MyAmazingBucket4-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket5": {
       "Properties": {
-        "Name": "MyAmazingBucket5"
+        "Name": "MyAmazingBucket5-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket6": {
       "Properties": {
-        "Name": "MyAmazingBucket6"
+        "Name": "MyAmazingBucket6-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket7": {
       "Properties": {
-        "Name": "MyAmazingBucket7"
+        "Name": "MyAmazingBucket7-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket8": {
       "Properties": {
-        "Name": "MyAmazingBucket8"
+        "Name": "MyAmazingBucket8-productionz"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket9": {
       "Properties": {
-        "Name": "MyAmazingBucket9"
+        "Name": "MyAmazingBucket9-productionz"
       },
+      "Type": "AWS::S3::Bucket"
+    },
+    "OtherS3Bucket": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "OtherS3Bucket2": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "OtherS3Bucket3": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "OtherS3Bucket4": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "OtherS3Bucket5": {
       "Type": "AWS::S3::Bucket"
     }
   }

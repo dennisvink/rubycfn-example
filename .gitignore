@@ -1,0 +1,12 @@
+.idea/
+*.swp
+*.gem
+*.rbc
+.env.private
+.bundle
+.config
+.yardoc
+/coverage
+/doc/
+.ruby-version
+/test-reports

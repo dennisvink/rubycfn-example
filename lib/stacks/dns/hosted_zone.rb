@@ -3,11 +3,12 @@ module DnsStack
   extend ActiveSupport::Concern
 
   included do
-    variable :environment,
-             default: "production",
-             value: ENV["ENVIRONMENT"]
 
+    # Set stack description. The environment variable
+    # is a global variable exposed by lib/shared_concerns/global_variables.rb
     description "Route53 #{environment} Stack"
+
+    # Create a hosted zone for our domain name
     resource :hosted_zone,
              type: "AWS::Route53::HostedZone" do |r|
         r.property(:hosted_zone_config) do
