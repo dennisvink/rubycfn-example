@@ -1,0 +1,47 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "MyFirstInternetGateway": {
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "MyFirstRoute": {
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "MyFirstInternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "MyFirstRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "MyFirstRouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyFirstVpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "MyFirstVpc": {
+      "Properties": {
+        "CidrBlock": "10.1.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true
+      },
+      "Type": "AWS::EC2::VPC"
+    },
+    "MyFirstVpcGatewayAttachment": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "MyFirstInternetGateway"
+        },
+        "VpcId": {
+          "Ref": "MyFirstVpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    }
+  }
+}

@@ -31,6 +31,9 @@
       "Type": "AWS::Route53::HostedZone"
     },
     "HostedZoneSes": {
+      "DependsOn": [
+        "HostedZone"
+      ],
       "Properties": {
         "Name": {
           "Fn::Join": [

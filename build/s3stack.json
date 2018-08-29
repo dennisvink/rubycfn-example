@@ -4,61 +4,61 @@
   "Resources": {
     "MyS3Bucket": {
       "Properties": {
-        "Name": "MyAmazingBucket1-productionz"
+        "Name": "MyAmazingBucket1-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket10": {
       "Properties": {
-        "Name": "MyAmazingBucket10-productionz"
+        "Name": "MyAmazingBucket10-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket2": {
       "Properties": {
-        "Name": "MyAmazingBucket2-productionz"
+        "Name": "MyAmazingBucket2-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket3": {
       "Properties": {
-        "Name": "MyAmazingBucket3-productionz"
+        "Name": "MyAmazingBucket3-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket4": {
       "Properties": {
-        "Name": "MyAmazingBucket4-productionz"
+        "Name": "MyAmazingBucket4-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket5": {
       "Properties": {
-        "Name": "MyAmazingBucket5-productionz"
+        "Name": "MyAmazingBucket5-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket6": {
       "Properties": {
-        "Name": "MyAmazingBucket6-productionz"
+        "Name": "MyAmazingBucket6-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket7": {
       "Properties": {
-        "Name": "MyAmazingBucket7-productionz"
+        "Name": "MyAmazingBucket7-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket8": {
       "Properties": {
-        "Name": "MyAmazingBucket8-productionz"
+        "Name": "MyAmazingBucket8-production"
       },
       "Type": "AWS::S3::Bucket"
     },
     "MyS3Bucket9": {
       "Properties": {
-        "Name": "MyAmazingBucket9-productionz"
+        "Name": "MyAmazingBucket9-production"
       },
       "Type": "AWS::S3::Bucket"
     },
