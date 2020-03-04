@@ -1,12 +1,14 @@
 require "rubycfn"
 require "dotenv"
+require_relative "core/classes"
 
-Dotenv.load(".env")
 Dotenv.load(".env.private")
+Dotenv.load(".env.dependencies")
+Dotenv.load(".env")
 Dotenv.load(".env.#{ENV["ENVIRONMENT"]}")
 
 # Include all group concerns
-Dir[File.expand_path('../shared_concerns/', __FILE__) + '/*.rb'].sort.each do |file|
+Dir[File.expand_path("../shared_concerns/", __FILE__) + "/**/*.rb"].sort.each do |file|
   require file
 end
 
@@ -21,10 +23,10 @@ module SharedConcerns
 end
 
 # Include all stack concerns
-Dir[File.expand_path('../stacks/', __FILE__) + '/*.rb'].sort.each do |file|
-  subdir = File.basename(file, ".rb") 
-  Dir[File.expand_path('../stacks/', __FILE__) + "/#{subdir}/*.rb"].sort.each do |subfile|
-    require subfile
+# Load module code first, and last include main.rb's.
+2.times do |i|
+  Dir[File.expand_path("../stacks/", __FILE__) + "/**/*.rb"].sort.each do |file|
+    require file unless File.basename(file) == "main.rb" || i.positive?
+    require file if File.basename(file) == "main.rb" && i.positive?
   end
-  require file
 end

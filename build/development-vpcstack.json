@@ -1,0 +1,1035 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "VpcStack-dd75084d287c8ef13c57b1de31ca3316d09b1fa8-dirty",
+  "Resources": {
+    "InfraBackendRdsPrivateSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            9,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "12",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentBackendRdsPrivate1"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "BackendRdsPrivate"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraBackendRdsPrivateSubnet2": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            10,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "12",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentBackendRdsPrivate2"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "BackendRdsPrivate"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraBackendRdsPrivateSubnet3": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            2,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            11,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "12",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentBackendRdsPrivate3"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "BackendRdsPrivate"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraBackendRdsPrivateSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraBackendRdsPrivateSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraBackendRdsPrivateSubnetRouteTableAssociation2": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable2"
+        },
+        "SubnetId": {
+          "Ref": "InfraBackendRdsPrivateSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraBackendRdsPrivateSubnetRouteTableAssociation3": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable3"
+        },
+        "SubnetId": {
+          "Ref": "InfraBackendRdsPrivateSubnet3"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraBackendRdsPublicSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            6,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "9",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentBackendRdsPublic1"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "BackendRdsPublic"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraBackendRdsPublicSubnet2": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            7,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "9",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentBackendRdsPublic2"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "BackendRdsPublic"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraBackendRdsPublicSubnet3": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            2,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            8,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "9",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentBackendRdsPublic3"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "BackendRdsPublic"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraBackendRdsPublicSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraBackendRdsPublicSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraBackendRdsPublicSubnetRouteTableAssociation2": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraBackendRdsPublicSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraBackendRdsPublicSubnetRouteTableAssociation3": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraBackendRdsPublicSubnet3"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraEc2PrivateSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            3,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "6",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentEc2Private1"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "Ec2Private"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraEc2PrivateSubnet2": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            4,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "6",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentEc2Private2"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "Ec2Private"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraEc2PrivateSubnet3": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            2,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            5,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "6",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentEc2Private3"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "Ec2Private"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraEc2PrivateSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PrivateSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraEc2PrivateSubnetRouteTableAssociation2": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable2"
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PrivateSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraEc2PrivateSubnetRouteTableAssociation3": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable3"
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PrivateSubnet3"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraEc2PublicElasticIp": {
+      "Properties": {
+        "Domain": "vpc"
+      },
+      "Type": "AWS::EC2::EIP"
+    },
+    "InfraEc2PublicElasticIp2": {
+      "Properties": {
+        "Domain": "vpc"
+      },
+      "Type": "AWS::EC2::EIP"
+    },
+    "InfraEc2PublicElasticIp3": {
+      "Properties": {
+        "Domain": "vpc"
+      },
+      "Type": "AWS::EC2::EIP"
+    },
+    "InfraEc2PublicNatGateway": {
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "InfraEc2PublicElasticIp",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PublicSubnet"
+        }
+      },
+      "Type": "AWS::EC2::NatGateway"
+    },
+    "InfraEc2PublicNatGateway2": {
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "InfraEc2PublicElasticIp2",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PublicSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::NatGateway"
+    },
+    "InfraEc2PublicNatGateway3": {
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "InfraEc2PublicElasticIp3",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PublicSubnet3"
+        }
+      },
+      "Type": "AWS::EC2::NatGateway"
+    },
+    "InfraEc2PublicSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "3",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentEc2Public1"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "Ec2Public"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraEc2PublicSubnet2": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "3",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentEc2Public2"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "Ec2Public"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraEc2PublicSubnet3": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            2,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Fn::Select": [
+            2,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::GetAtt": [
+                    "InfraVpc",
+                    "CidrBlock"
+                  ]
+                },
+                "3",
+                "8"
+              ]
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DevelopmentEc2Public3"
+          },
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "resource_type",
+            "Value": "Ec2Public"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "InfraEc2PublicSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PublicSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraEc2PublicSubnetRouteTableAssociation2": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PublicSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraEc2PublicSubnetRouteTableAssociation3": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InfraRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "InfraEc2PublicSubnet3"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "InfraInternetGateway": {
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "InfraNatGatewayRoute": {
+      "DependsOn": [
+        "InfraVpcGatewayAttachment",
+        "InfraEc2PublicNatGateway"
+      ],
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "InfraEc2PublicNatGateway"
+        },
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "InfraNatGatewayRoute2": {
+      "DependsOn": [
+        "InfraVpcGatewayAttachment",
+        "InfraEc2PublicNatGateway2"
+      ],
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "InfraEc2PublicNatGateway2"
+        },
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable2"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "InfraNatGatewayRoute3": {
+      "DependsOn": [
+        "InfraVpcGatewayAttachment",
+        "InfraEc2PublicNatGateway3"
+      ],
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "InfraEc2PublicNatGateway3"
+        },
+        "RouteTableId": {
+          "Ref": "InfraPrivateRouteTable3"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "InfraPrivateRouteTable": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Infra development Private Route Table "
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "InfraPrivateRouteTable2": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Infra development Private Route Table 2"
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "InfraPrivateRouteTable3": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Infra development Private Route Table 3"
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "InfraRoute": {
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InfraInternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "InfraRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "InfraRouteTable": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Infra development Public Route Table"
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ],
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "InfraVpc": {
+      "Properties": {
+        "CidrBlock": "10.10.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "infra_development_vpc"
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::VPC"
+    },
+    "InfraVpcGatewayAttachment": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "InfraInternetGateway"
+        },
+        "VpcId": {
+          "Ref": "InfraVpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "CloudFormationDummyResource": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Metadata": {
+        "Comment": "Resource to update stack even if there are no changes",
+        "GitCommitHash": "dd75084d287c8ef13c57b1de31ca3316d09b1fa8"
+      }
+    }
+  },
+  "Outputs": {
+    "BackendRdsPrivateSubnet2Name": {
+      "Value": {
+        "Ref": "InfraBackendRdsPrivateSubnet2"
+      }
+    },
+    "BackendRdsPrivateSubnet3Name": {
+      "Value": {
+        "Ref": "InfraBackendRdsPrivateSubnet3"
+      }
+    },
+    "BackendRdsPrivateSubnetName": {
+      "Value": {
+        "Ref": "InfraBackendRdsPrivateSubnet"
+      }
+    },
+    "BackendRdsPublicSubnet2Name": {
+      "Value": {
+        "Ref": "InfraBackendRdsPublicSubnet2"
+      }
+    },
+    "BackendRdsPublicSubnet3Name": {
+      "Value": {
+        "Ref": "InfraBackendRdsPublicSubnet3"
+      }
+    },
+    "BackendRdsPublicSubnetName": {
+      "Value": {
+        "Ref": "InfraBackendRdsPublicSubnet"
+      }
+    },
+    "Ec2PrivateSubnet2Name": {
+      "Value": {
+        "Ref": "InfraEc2PrivateSubnet2"
+      }
+    },
+    "Ec2PrivateSubnet3Name": {
+      "Value": {
+        "Ref": "InfraEc2PrivateSubnet3"
+      }
+    },
+    "Ec2PrivateSubnetName": {
+      "Value": {
+        "Ref": "InfraEc2PrivateSubnet"
+      }
+    },
+    "Ec2PublicSubnet2Name": {
+      "Value": {
+        "Ref": "InfraEc2PublicSubnet2"
+      }
+    },
+    "Ec2PublicSubnet3Name": {
+      "Value": {
+        "Ref": "InfraEc2PublicSubnet3"
+      }
+    },
+    "Ec2PublicSubnetName": {
+      "Value": {
+        "Ref": "InfraEc2PublicSubnet"
+      }
+    },
+    "NatGatewayEc2Public": {
+      "Value": {
+        "Ref": "InfraEc2PublicNatGateway"
+      }
+    },
+    "NatGatewayEc2Public2": {
+      "Value": {
+        "Ref": "InfraEc2PublicNatGateway2"
+      }
+    },
+    "NatGatewayEc2Public3": {
+      "Value": {
+        "Ref": "InfraEc2PublicNatGateway3"
+      }
+    },
+    "VpcCidr": {
+      "Value": {
+        "Fn::GetAtt": [
+          "InfraVpc",
+          "CidrBlock"
+        ]
+      }
+    },
+    "VpcId": {
+      "Value": {
+        "Ref": "InfraVpc"
+      }
+    }
+  }
+}

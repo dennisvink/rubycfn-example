@@ -1,0 +1,573 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "EcsStack-dd75084d287c8ef13c57b1de31ca3316d09b1fa8-dirty",
+  "Parameters": {
+    "EcsAmi": {
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id",
+      "Description": "ECS-Optimized AMI ID",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>"
+    },
+    "PublicSubnets": {
+      "Description": "List of Public EC2 Subnets for the ALB",
+      "Type": "String"
+    },
+    "Subnets": {
+      "Description": "Subnets for ECS",
+      "Type": "String"
+    },
+    "Vpc": {
+      "Description": "VPC ID",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "AutoscalingNotificationRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "autoscaling.amazonaws.com"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AutoScalingNotificationAccessRole"
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "DefaultTargetGroup": {
+      "Properties": {
+        "Name": "development-default",
+        "Port": 80,
+        "Protocol": "HTTP",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "EcsAutoScalingGroup": {
+      "Properties": {
+        "DesiredCapacity": 1,
+        "LaunchConfigurationName": {
+          "Ref": "EcsLaunchConfiguration"
+        },
+        "MaxSize": 1,
+        "MinSize": 1,
+        "Tags": [
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "development ECS host"
+          }
+        ],
+        "VPCZoneIdentifier": {
+          "Fn::Split": [
+            ",",
+            {
+              "Ref": "Subnets"
+            }
+          ]
+        }
+      },
+      "Type": "AWS::AutoScaling::AutoScalingGroup"
+    },
+    "EcsCloudWatchParameter": {
+      "Properties": {
+        "Description": "ECS",
+        "Name": {
+          "Fn::Sub": "AmazonCloudWatch-${SfsEcsCluster}-ECS"
+        },
+        "Type": "String",
+        "Value": {
+          "Fn::Sub": "{\n  \"logs\": {\n    \"force_flush_interval\": 5,\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\n            \"file_path\": \"/var/log/messages\",\n            \"log_group_name\": \"${SfsEcsCluster}-/var/log/messages\",\n            \"log_stream_name\": \"{instance_id}\",\n            \"timestamp_format\": \"%b %d %H:%M:%S\"\n          },\n          {\n            \"file_path\": \"/var/log/dmesg\",\n            \"log_group_name\": \"${SfsEcsCluster}-/var/log/dmesg\",\n            \"log_stream_name\": \"{instance_id}\"\n          },\n          {\n            \"file_path\": \"/var/log/docker\",\n            \"log_group_name\": \"${SfsEcsCluster}-/var/log/docker\",\n            \"log_stream_name\": \"{instance_id}\",\n            \"timestamp_format\": \"%Y-%m-%dT%H:%M:%S.%f\"\n          },\n          {\n            \"file_path\": \"/var/log/ecs/ecs-init.log\",\n            \"log_group_name\": \"${SfsEcsCluster}-/var/log/ecs/ecs-init.log\",\n            \"log_stream_name\": \"{instance_id}\",\n            \"timestamp_format\": \"%Y-%m-%dT%H:%M:%SZ\"\n          },\n          {\n            \"file_path\": \"/var/log/ecs/ecs-agent.log.*\",\n            \"log_group_name\": \"${SfsEcsCluster}-/var/log/ecs/ecs-agent.log\",\n            \"log_stream_name\": \"{instance_id}\",\n            \"timestamp_format\": \"%Y-%m-%dT%H:%M:%SZ\"\n          },\n          {\n            \"file_path\": \"/var/log/ecs/audit.log\",\n            \"log_group_name\": \"${SfsEcsCluster}-/var/log/ecs/audit.log\",\n            \"log_stream_name\": \"{instance_id}\",\n            \"timestamp_format\": \"%Y-%m-%dT%H:%M:%SZ\"\n          }\n        ]\n      }\n    }\n  },\n  \"metrics\": {\n    \"append_dimensions\": {\n      \"AutoScalingGroupName\": \"${!aws:AutoScalingGroupName}\",\n      \"InstanceId\": \"${!aws:InstanceId}\",\n      \"InstanceType\": \"${!aws:InstanceType}\"\n    },\n    \"metrics_collected\": {\n      \"collectd\": {\n        \"metrics_aggregation_interval\": 60\n      },\n      \"disk\": {\n        \"measurement\": [\n          \"used_percent\"\n        ],\n        \"metrics_collection_interval\": 60,\n        \"resources\": [\n          \"/\"\n        ]\n      },\n      \"mem\": {\n        \"measurement\": [\n          \"mem_used_percent\"\n        ],\n        \"metrics_collection_interval\": 60\n      },\n      \"statsd\": {\n        \"metrics_aggregation_interval\": 60,\n        \"metrics_collection_interval\": 10,\n        \"service_address\": \":8125\"\n      }\n    }\n  }\n}"
+        }
+      },
+      "Type": "AWS::SSM::Parameter"
+    },
+    "EcsCluster": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "EcsHostSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Access to the ECS hosts and the tasks/containers that run on them",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": -1,
+            "SourceSecurityGroupId": {
+              "Ref": "LoadBalancerSecurityGroup"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "development-ECS-Hosts"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "EcsInstanceProfile": {
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "EcsRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::InstanceProfile"
+    },
+    "EcsLaunchConfiguration": {
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "commands": {
+              "01_add_instance_to_cluster": {
+                "command": {
+                  "Fn::Sub": "echo ECS_CLUSTER=${SfsEcsCluster} >> /etc/ecs/ecs.config"
+                }
+              },
+              "02_enable_cloudwatch_agent": {
+                "command": {
+                  "Fn::Sub": "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:${EcsCloudWatchParameter} -s"
+                }
+              }
+            },
+            "files": {
+              "/etc/cfn/cfn-hup.conf": {
+                "content": {
+                  "Fn::Sub": "[main]\nstack=${AWS::StackId}\nregion=${AWS::Region}\n"
+                },
+                "group": "root",
+                "mode": 256,
+                "owner": "root"
+              },
+              "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                "content": {
+                  "Fn::Sub": "[cfn-auto-reloader-hook]\ntriggers=post.update\npath=Resources.EcsLaunchConfiguration.Metadata.AWS::CloudFormation::Init\naction=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource EcsLaunchConfiguration\n"
+                }
+              }
+            },
+            "services": {
+              "sysvinit": {
+                "cfn-hup": {
+                  "enabled": true,
+                  "ensureRunning": true,
+                  "files": [
+                    "/etc/cfn/cfn-hup.conf",
+                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "IamInstanceProfile": {
+          "Ref": "EcsInstanceProfile"
+        },
+        "ImageId": {
+          "Ref": "EcsAmi"
+        },
+        "InstanceType": "t2.micro",
+        "KeyName": "sfs-keypair-development",
+        "SecurityGroups": [
+          {
+            "Ref": "EcsHostSecurityGroup"
+          },
+          {
+            "Ref": "LoadBalancerSecurityGroup"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Sub": "#!/bin/bash\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm\nyum install -y https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\nyum install -y aws-cfn-bootstrap hibagent \n/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource EcsLaunchConfiguration\n/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource EcsAutoScalingGroup\n/usr/bin/enable-ec2-spot-hibernation\n"
+          }
+        }
+      },
+      "Type": "AWS::AutoScaling::LaunchConfiguration"
+    },
+    "EcsLifecycleNotificationTopic": {
+      "DependsOn": [
+        "LifecycleHandlerFunction"
+      ],
+      "Properties": {
+        "Subscription": [
+          {
+            "Endpoint": {
+              "Fn::GetAtt": [
+                "LifecycleHandlerFunction",
+                "Arn"
+              ]
+            },
+            "Protocol": "lambda"
+          }
+        ]
+      },
+      "Type": "AWS::SNS::Topic"
+    },
+    "EcsLoadBalancer": {
+      "Properties": {
+        "Name": "development",
+        "SecurityGroups": [
+          {
+            "Ref": "EcsHostSecurityGroup"
+          },
+          {
+            "Ref": "LoadBalancerSecurityGroup"
+          }
+        ],
+        "Subnets": {
+          "Fn::Split": [
+            ",",
+            {
+              "Ref": "PublicSubnets"
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "development_ecs_loadbalancer"
+          }
+        ]
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    },
+    "EcsRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": "{\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      }\n    }\n  ]\n}",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+          "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+          "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+        ],
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": "{\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"ecs:CreateCluster\",\n        \"ecs:DeregisterContainerInstance\",\n        \"ecs:DiscoverPollEndpoint\",\n        \"ecs:Poll\",\n        \"ecs:RegisterContainerInstance\",\n        \"ecs:StartTelemetrySession\",\n        \"ecs:Submit*\",\n        \"ecr:BatchCheckLayerAvailability\",\n        \"ecr:BatchGetImage\",\n        \"ecr:GetDownloadUrlForLayer\",\n        \"ecr:GetAuthorizationToken\"\n      ],\n      \"Resource\": \"*\"\n    }\n  ]\n}",
+            "PolicyName": "ecs-service"
+          }
+        ],
+        "RoleName": {
+          "Fn::Sub": "development-ECSRole-${AWS::Region}"
+        }
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "EcsServiceAutoScalingRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": {
+            "Action": [
+              "sts:AssumeRole"
+            ],
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "application-autoscaling.amazonaws.com"
+              ]
+            }
+          },
+          "Version": "2012-10-17"
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": {
+                "Action": [
+                  "application-autoscaling:*",
+                  "cloudwatch:DescribeAlarms",
+                  "cloudwatch:PutMetricAlarm",
+                  "ecs:DescribeServices",
+                  "ecs:UpdateService"
+                ],
+                "Effect": "Allow",
+                "Resource": "*"
+              }
+            },
+            "PolicyName": "ecs-service-autoscaling"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "InstanceTerminatingHook": {
+      "DependsOn": [
+        "EcsLifecycleNotificationTopic"
+      ],
+      "Properties": {
+        "AutoScalingGroupName": {
+          "Ref": "EcsAutoScalingGroup"
+        },
+        "DefaultResult": "ABANDON",
+        "HeartbeatTimeout": 900,
+        "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+        "NotificationTargetARN": {
+          "Ref": "EcsLifecycleNotificationTopic"
+        },
+        "RoleARN": {
+          "Fn::GetAtt": [
+            "AutoscalingNotificationRole",
+            "Arn"
+          ]
+        }
+      },
+      "Type": "AWS::AutoScaling::LifecycleHook"
+    },
+    "LambdaExecutionRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AutoScalingNotificationAccessRole"
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "autoscaling:CompleteLifecycleAction",
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "ec2:DescribeInstances",
+                    "ec2:DescribeInstanceAttribute",
+                    "ec2:DescribeInstanceStatus",
+                    "ec2:DescribeHosts",
+                    "ecs:ListContainerInstances",
+                    "ecs:SubmitContainerStateChange",
+                    "ecs:SubmitTaskStateChange",
+                    "ecs:DescribeContainerInstances",
+                    "ecs:UpdateContainerInstancesState",
+                    "ecs:ListTasks",
+                    "ecs:DescribeTasks",
+                    "sns:Publish",
+                    "sns:ListSubscriptions"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "lambda-inline"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "LambdaInvokePermission": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "LifecycleHandlerFunction"
+        },
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "EcsLifecycleNotificationTopic"
+        }
+      },
+      "Type": "AWS::Lambda::Permission"
+    },
+    "LifecycleHandlerFunction": {
+      "Properties": {
+        "Code": {
+          "ZipFile": {
+            "Fn::Join": [
+              "\n",
+              [
+                "import boto3,json,os,time",
+                "ec2Client = boto3.client('ec2')",
+                "ecsClient = boto3.client('ecs')",
+                "autoscalingClient = boto3.client('autoscaling')",
+                "snsClient = boto3.client('sns')",
+                "lambdaClient = boto3.client('lambda')",
+                "def publishSNSMessage(snsMessage,snsTopicArn):",
+                "    response = snsClient.publish(TopicArn=snsTopicArn,Message=json.dumps(snsMessage),Subject='reinvoking')",
+                "def setContainerInstanceStatusToDraining(ecsClusterName,containerInstanceArn):",
+                "    response = ecsClient.update_container_instances_state(cluster=ecsClusterName,containerInstances=[containerInstanceArn],status='DRAINING')",
+                "def tasksRunning(ecsClusterName,ec2InstanceId):",
+                "    ecsContainerInstances = ecsClient.describe_container_instances(cluster=ecsClusterName,containerInstances=ecsClient.list_container_instances(cluster=ecsClusterName)['containerInstanceArns'])['containerInstances']",
+                "    for i in ecsContainerInstances:",
+                "        if i['ec2InstanceId'] == ec2InstanceId:",
+                "            if i['status'] == 'ACTIVE':",
+                "                setContainerInstanceStatusToDraining(ecsClusterName,i['containerInstanceArn'])",
+                "                return 1",
+                "            if (i['runningTasksCount']>0) or (i['pendingTasksCount']>0):",
+                "                return 1",
+                "            return 0",
+                "    return 2",
+                "def lambda_handler(event, context):",
+                "    ecsClusterName=os.environ['CLUSTER']",
+                "    snsTopicArn=event['Records'][0]['Sns']['TopicArn']",
+                "    snsMessage=json.loads(event['Records'][0]['Sns']['Message'])",
+                "    lifecycleHookName=snsMessage['LifecycleHookName']",
+                "    lifecycleActionToken=snsMessage['LifecycleActionToken']",
+                "    asgName=snsMessage['AutoScalingGroupName']",
+                "    ec2InstanceId=snsMessage['EC2InstanceId']",
+                "    checkTasks=tasksRunning(ecsClusterName,ec2InstanceId)",
+                "    if checkTasks==0:",
+                "        try:",
+                "            response = autoscalingClient.complete_lifecycle_action(LifecycleHookName=lifecycleHookName,AutoScalingGroupName=asgName,LifecycleActionToken=lifecycleActionToken,LifecycleActionResult='CONTINUE')",
+                "        except BaseException as e:",
+                "            print(str(e))",
+                "    elif checkTasks==1:",
+                "        time.sleep(5)",
+                "        publishSNSMessage(snsMessage,snsTopicArn)"
+              ]
+            ]
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "CLUSTER": {
+              "Ref": "SfsEcsCluster"
+            }
+          }
+        },
+        "Handler": "index.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaExecutionRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.6",
+        "Timeout": 10
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "LoadBalancerListener": {
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "DefaultTargetGroup"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "EcsLoadBalancer"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener"
+    },
+    "LoadBalancerSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Access to the load balancer that sits in front of ECS",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "IpProtocol": -1
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "development-ECS-LoadBalancers"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "CloudFormationDummyResource": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Metadata": {
+        "Comment": "Resource to update stack even if there are no changes",
+        "GitCommitHash": "dd75084d287c8ef13c57b1de31ca3316d09b1fa8"
+      }
+    }
+  },
+  "Outputs": {
+    "EcsAutoScalingRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "EcsServiceAutoScalingRole",
+          "Arn"
+        ]
+      }
+    },
+    "EcsCluster": {
+      "Value": {
+        "Ref": "EcsCluster"
+      }
+    },
+    "EcsClusterArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "EcsCluster",
+          "Arn"
+        ]
+      }
+    },
+    "EcsLoadBalancer": {
+      "Description": "ECS Application Load Balancer",
+      "Value": {
+        "Ref": "EcsLoadBalancer"
+      }
+    },
+    "EcsLoadBalancerHostedZoneId": {
+      "Description": "Canonical Hosted Zone ID of the ALB",
+      "Value": {
+        "Fn::GetAtt": [
+          "EcsLoadBalancer",
+          "CanonicalHostedZoneID"
+        ]
+      }
+    },
+    "EcsLoadBalancerListener": {
+      "Description": "ECS Port 80 listener",
+      "Value": {
+        "Ref": "LoadBalancerListener"
+      }
+    },
+    "EcsLoadBalancerUrl": {
+      "Description": "URL of the ECS ALB",
+      "Value": {
+        "Fn::GetAtt": [
+          "EcsLoadBalancer",
+          "DNSName"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "ParentStack-dd75084d287c8ef13c57b1de31ca3316d09b1fa8-dirty",
+  "Parameters": {
+    "ARTIFACTBUCKET": {
+      "Description": "ARTIFACTBUCKET",
+      "Type": "String"
+    },
+    "CLOUDFORMATIONBUCKET": {
+      "Description": "CLOUDFORMATIONBUCKET",
+      "Type": "String"
+    },
+    "HOSTEDZONEID": {
+      "Description": "HOSTEDZONEID",
+      "Type": "String"
+    },
+    "HOSTEDZONENAME": {
+      "Description": "HOSTEDZONENAME",
+      "Type": "String"
+    },
+    "LAMBDABUCKET": {
+      "Description": "LAMBDABUCKET",
+      "Type": "String"
+    },
+    "LOGGINGBUCKET": {
+      "Description": "LOGGINGBUCKET",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "HelloWorld2Stack": {
+      "Properties": {
+        "Parameters": {
+          "CanonicalHostedZoneId": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.EcsLoadBalancerHostedZoneId"
+            ]
+          },
+          "CertificateProviderFunctionArn": {
+            "Fn::GetAtt": [
+              "AcmStack",
+              "Outputs.CertificateProviderFunctionArn"
+            ]
+          },
+          "Cluster": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.SfsEcsCluster"
+            ]
+          },
+          "EcsServiceAutoScalingRoleArn": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.SfsEcsAutoScalingRoleArn"
+            ]
+          },
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "Route53Stack",
+              "Outputs.HostedZoneId"
+            ]
+          },
+          "HostedZoneName": {
+            "Fn::GetAtt": [
+              "Route53Stack",
+              "Outputs.HostedZoneName"
+            ]
+          },
+          "Listener": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.EcsLoadBalancerListener"
+            ]
+          },
+          "LoadBalancerDnsName": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.EcsLoadBalancerUrl"
+            ]
+          },
+          "Vpc": {
+            "Fn::GetAtt": [
+              "VpcStack",
+              "Outputs.SfsVpc"
+            ]
+          }
+        },
+        "TemplateURL": "https://s3.amazonaws.com/rspec-dependencystack-cloudformationbucket-mock/development-helloworld2stack-dd75084d287c8ef13c57b1de31ca3316d09b1fa8-dirty.json"
+      },
+      "Type": "AWS::CloudFormation::Stack"
+    },
+    "HelloWorldStack": {
+      "Properties": {
+        "Parameters": {
+          "CanonicalHostedZoneId": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.EcsLoadBalancerHostedZoneId"
+            ]
+          },
+          "CertificateProviderFunctionArn": {
+            "Fn::GetAtt": [
+              "AcmStack",
+              "Outputs.CertificateProviderFunctionArn"
+            ]
+          },
+          "Cluster": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.SfsEcsCluster"
+            ]
+          },
+          "EcsServiceAutoScalingRoleArn": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.SfsEcsAutoScalingRoleArn"
+            ]
+          },
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "Route53Stack",
+              "Outputs.HostedZoneId"
+            ]
+          },
+          "HostedZoneName": {
+            "Fn::GetAtt": [
+              "Route53Stack",
+              "Outputs.HostedZoneName"
+            ]
+          },
+          "Listener": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.EcsLoadBalancerListener"
+            ]
+          },
+          "LoadBalancerDnsName": {
+            "Fn::GetAtt": [
+              "EcsStack",
+              "Outputs.EcsLoadBalancerUrl"
+            ]
+          },
+          "Vpc": {
+            "Fn::GetAtt": [
+              "VpcStack",
+              "Outputs.SfsVpc"
+            ]
+          }
+        },
+        "TemplateURL": "https://s3.amazonaws.com/rspec-dependencystack-cloudformationbucket-mock/development-helloworldstack-dd75084d287c8ef13c57b1de31ca3316d09b1fa8-dirty.json"
+      },
+      "Type": "AWS::CloudFormation::Stack"
+    },
+    "VpcStack": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Team",
+            "Value": "infra"
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          },
+          {
+            "Key": "StackName",
+            "Value": "development-devops"
+          }
+        ],
+        "TemplateURL": "https://s3.amazonaws.com/rspec-dependencystack-cloudformationbucket-mock/development-vpcstack-dd75084d287c8ef13c57b1de31ca3316d09b1fa8-dirty.json"
+      },
+      "Type": "AWS::CloudFormation::Stack"
+    },
+    "CloudFormationDummyResource": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Metadata": {
+        "Comment": "Resource to update stack even if there are no changes",
+        "GitCommitHash": "dd75084d287c8ef13c57b1de31ca3316d09b1fa8"
+      }
+    }
+  }
+}

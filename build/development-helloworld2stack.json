@@ -1,0 +1,639 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "HelloWorld2Stack-dd75084d287c8ef13c57b1de31ca3316d09b1fa8-dirty",
+  "Parameters": {
+    "CanonicalHostedZoneId": {
+      "Description": "Canonical Hosted Zone Id of ALB",
+      "Type": "String"
+    },
+    "CertificateProviderFunctionArn": {
+      "Description": "ARN of certificate provider",
+      "Type": "String"
+    },
+    "Cluster": {
+      "Description": "ECS Cluster ID",
+      "Type": "String"
+    },
+    "EcsServiceAutoScalingRoleArn": {
+      "Description": "The ECS service auto scaling role ARN",
+      "Type": "String"
+    },
+    "HostedZoneId": {
+      "Description": "Hosted Zone ID",
+      "Type": "String"
+    },
+    "HostedZoneName": {
+      "Description": "Hosted Zone Name",
+      "Type": "String"
+    },
+    "Listener": {
+      "Description": "The Application Load Balancer listener to register with",
+      "Type": "String"
+    },
+    "LoadBalancerDnsName": {
+      "Description": "URL of the ECS ALB",
+      "Type": "String"
+    },
+    "Vpc": {
+      "Description": "The VPC that the ECS cluster is deployed to",
+      "Type": "AWS::EC2::VPC::Id"
+    }
+  },
+  "Resources": {
+    "ApplicationCloudfrontDnsRecord": {
+      "Properties": {
+        "HostedZoneId": {
+          "Ref": "HostedZoneId"
+        },
+        "RecordSets": [
+          {
+            "AliasTarget": {
+              "DNSName": {
+                "Fn::GetAtt": [
+                  "CloudfrontDistribution",
+                  "DomainName"
+                ]
+              },
+              "HostedZoneId": "Z2FDTNDATAQYW2"
+            },
+            "Name": {
+              "Fn::Join": [
+                ".",
+                [
+                  "hello-world2",
+                  {
+                    "Ref": "HostedZoneName"
+                  }
+                ]
+              ]
+            },
+            "Type": "A"
+          }
+        ]
+      },
+      "Type": "AWS::Route53::RecordSetGroup"
+    },
+    "ApplicationLoadBalancerRecord": {
+      "Properties": {
+        "AliasTarget": {
+          "DNSName": {
+            "Ref": "LoadBalancerDnsName"
+          },
+          "EvaluateTargetHealth": true,
+          "HostedZoneId": {
+            "Ref": "CanonicalHostedZoneId"
+          }
+        },
+        "HostedZoneId": {
+          "Ref": "HostedZoneId"
+        },
+        "Name": {
+          "Fn::Join": [
+            ".",
+            [
+              "origin",
+              "hello-world2",
+              {
+                "Ref": "HostedZoneName"
+              }
+            ]
+          ]
+        },
+        "Type": "A"
+      },
+      "Type": "AWS::Route53::RecordSet"
+    },
+    "CloudWatchLogsGroup": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::StackName"
+              },
+              "-helloworld2"
+            ]
+          ]
+        },
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup"
+    },
+    "CloudfrontDistribution": {
+      "DependsOn": [
+        "EcsApplicationIssuedCertificate"
+      ],
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": [
+            {
+              "Fn::Join": [
+                ".",
+                [
+                  "hello-world2",
+                  {
+                    "Ref": "HostedZoneName"
+                  }
+                ]
+              ]
+            }
+          ],
+          "Comment": {
+            "Fn::Join": [
+              " ",
+              [
+                "Distribution config for",
+                {
+                  "Fn::Join": [
+                    ".",
+                    [
+                      "hello-world2",
+                      {
+                        "Ref": "HostedZoneName"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          },
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE"
+            ],
+            "DefaultTTL": 0,
+            "ForwardedValues": {
+              "Cookies": {
+                "Forward": "all"
+              },
+              "Headers": [
+                "*"
+              ],
+              "QueryString": true
+            },
+            "MaxTTL": 0,
+            "MinTTL": 0,
+            "TargetOriginId": "EcsApplication",
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": false,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "HTTPPort": 80,
+                "OriginKeepaliveTimeout": 5,
+                "OriginProtocolPolicy": "http-only",
+                "OriginReadTimeout": 30
+              },
+              "DomainName": {
+                "Fn::Join": [
+                  ".",
+                  [
+                    "origin",
+                    "hello-world2",
+                    {
+                      "Ref": "HostedZoneName"
+                    }
+                  ]
+                ]
+              },
+              "Id": "EcsApplication"
+            }
+          ],
+          "PriceClass": "PriceClass_All",
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "EcsApplicationCertificate"
+            },
+            "SslSupportMethod": "sni-only"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ]
+      },
+      "Type": "AWS::CloudFront::Distribution"
+    },
+    "CpuScaleInAlarm": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "ServiceScaleInPolicy"
+          }
+        ],
+        "AlarmDescription": "Alarm if cpu utilization greater than 70% of reserved cpu",
+        "AlarmName": "CPU utilization less than 70% on helloworld2-development",
+        "ComparisonOperator": "LessThanThreshold",
+        "Dimensions": [
+          {
+            "Name": "ClusterName",
+            "Value": {
+              "Ref": "Cluster"
+            }
+          },
+          {
+            "Name": "ServiceName",
+            "Value": {
+              "Fn::GetAtt": [
+                "Service",
+                "Name"
+              ]
+            }
+          }
+        ],
+        "EvaluationPeriods": "10",
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/ECS",
+        "Period": "60",
+        "Statistic": "Maximum",
+        "Threshold": "70"
+      },
+      "Type": "AWS::CloudWatch::Alarm"
+    },
+    "CpuScaleOutAlarm": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "ServiceScaleOutPolicy"
+          }
+        ],
+        "AlarmDescription": "Alarm if cpu utilization greater than 90% of reserved cpu",
+        "AlarmName": "CPU utilization greater than 90% on helloworld2-development",
+        "ComparisonOperator": "GreaterThanThreshold",
+        "Dimensions": [
+          {
+            "Name": "ClusterName",
+            "Value": {
+              "Ref": "Cluster"
+            }
+          },
+          {
+            "Name": "ServiceName",
+            "Value": {
+              "Fn::GetAtt": [
+                "Service",
+                "Name"
+              ]
+            }
+          }
+        ],
+        "EvaluationPeriods": "3",
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/ECS",
+        "Period": "60",
+        "Statistic": "Maximum",
+        "Threshold": "90"
+      },
+      "Type": "AWS::CloudWatch::Alarm"
+    },
+    "EcsApplicationCertificate": {
+      "Properties": {
+        "DomainName": {
+          "Fn::Join": [
+            ".",
+            [
+              "hello-world2",
+              {
+                "Ref": "HostedZoneName"
+              }
+            ]
+          ]
+        },
+        "Region": "us-east-1",
+        "ServiceToken": {
+          "Ref": "CertificateProviderFunctionArn"
+        },
+        "ValidationMethod": "DNS"
+      },
+      "Type": "Custom::Certificate"
+    },
+    "EcsApplicationDnsRecord": {
+      "Properties": {
+        "CertificateArn": {
+          "Ref": "EcsApplicationCertificate"
+        },
+        "DomainName": {
+          "Fn::Join": [
+            ".",
+            [
+              "hello-world2",
+              {
+                "Ref": "HostedZoneName"
+              }
+            ]
+          ]
+        },
+        "Region": "us-east-1",
+        "ServiceToken": {
+          "Ref": "CertificateProviderFunctionArn"
+        }
+      },
+      "Type": "Custom::CertificateDNSRecord"
+    },
+    "EcsApplicationIssuedCertificate": {
+      "Properties": {
+        "CertificateArn": {
+          "Ref": "EcsApplicationCertificate"
+        },
+        "Region": "us-east-1",
+        "ServiceToken": {
+          "Ref": "CertificateProviderFunctionArn"
+        }
+      },
+      "Type": "Custom::IssuedCertificate"
+    },
+    "EcsApplicationValidationRecord": {
+      "Properties": {
+        "HostedZoneId": {
+          "Ref": "HostedZoneId"
+        },
+        "RecordSets": [
+          {
+            "Name": {
+              "Fn::GetAtt": [
+                "EcsApplicationDnsRecord",
+                "Name"
+              ]
+            },
+            "ResourceRecords": [
+              {
+                "Fn::GetAtt": [
+                  "EcsApplicationDnsRecord",
+                  "Value"
+                ]
+              }
+            ],
+            "SetIdentifier": {
+              "Ref": "EcsApplicationCertificate"
+            },
+            "TTL": 60,
+            "Type": {
+              "Fn::GetAtt": [
+                "EcsApplicationDnsRecord",
+                "Type"
+              ]
+            },
+            "Weight": 1
+          }
+        ]
+      },
+      "Type": "AWS::Route53::RecordSetGroup"
+    },
+    "ListenerRule": {
+      "Properties": {
+        "Actions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "TargetGroup"
+            },
+            "Type": "forward"
+          }
+        ],
+        "Conditions": [
+          {
+            "Field": "host-header",
+            "Values": [
+              {
+                "Fn::Join": [
+                  ".",
+                  [
+                    "origin",
+                    "hello-world2",
+                    {
+                      "Ref": "HostedZoneName"
+                    }
+                  ]
+                ]
+              },
+              {
+                "Fn::Join": [
+                  ".",
+                  [
+                    "hello-world2",
+                    {
+                      "Ref": "HostedZoneName"
+                    }
+                  ]
+                ]
+              }
+            ]
+          }
+        ],
+        "ListenerArn": {
+          "Ref": "Listener"
+        },
+        "Priority": 3
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule"
+    },
+    "Service": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "Cluster"
+        },
+        "DesiredCount": 2,
+        "LoadBalancers": [
+          {
+            "ContainerName": "helloworld2-service",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "TargetGroup"
+            }
+          }
+        ],
+        "Role": {
+          "Ref": "ServiceRole"
+        },
+        "TaskDefinition": {
+          "Ref": "TaskDefinition"
+        }
+      },
+      "Type": "AWS::ECS::Service"
+    },
+    "ServiceRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": "{\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": [\n          \"ecs.amazonaws.com\"\n        ]\n      },\n      \"Action\": [\n        \"sts:AssumeRole\"\n      ]\n    }\n  ]\n}",
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "ec2:AuthorizeSecurityGroupIngress",
+                    "ec2:Describe*",
+                    "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                    "elasticloadbalancing:Describe*",
+                    "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                    "elasticloadbalancing:DeregisterTargets",
+                    "elasticloadbalancing:DescribeTargetGroups",
+                    "elasticloadbalancing:DescribeTargetHealth",
+                    "elasticloadbalancing:RegisterTargets"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": {
+              "Fn::Sub": "ecs-service-${AWS::StackName}"
+            }
+          }
+        ],
+        "RoleName": {
+          "Fn::Sub": "ecs-service-${AWS::StackName}"
+        }
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "ServiceScalableTarget": {
+      "Properties": {
+        "MaxCapacity": 8,
+        "MinCapacity": 2,
+        "ResourceId": {
+          "Fn::Join": [
+            "/",
+            [
+              "service",
+              {
+                "Ref": "Cluster"
+              },
+              {
+                "Fn::GetAtt": [
+                  "Service",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        },
+        "RoleARN": {
+          "Ref": "EcsServiceAutoScalingRoleArn"
+        },
+        "ScalableDimension": "ecs:service:DesiredCount",
+        "ServiceNamespace": "ecs"
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget"
+    },
+    "ServiceScaleInPolicy": {
+      "Properties": {
+        "PolicyName": "ServiceScaleInPolicy",
+        "PolicyType": "StepScaling",
+        "ScalingTargetId": {
+          "Ref": "ServiceScalableTarget"
+        },
+        "StepScalingPolicyConfiguration": {
+          "AdjustmentType": "ChangeInCapacity",
+          "Cooldown": 600,
+          "MetricAggregationType": "Average",
+          "StepAdjustments": [
+            {
+              "MetricIntervalUpperBound": 0,
+              "ScalingAdjustment": -1
+            }
+          ]
+        }
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy"
+    },
+    "ServiceScaleOutPolicy": {
+      "Properties": {
+        "PolicyName": "ServiceScaleOutPolicy",
+        "PolicyType": "StepScaling",
+        "ScalingTargetId": {
+          "Ref": "ServiceScalableTarget"
+        },
+        "StepScalingPolicyConfiguration": {
+          "AdjustmentType": "ChangeInCapacity",
+          "Cooldown": 300,
+          "MetricAggregationType": "Average",
+          "StepAdjustments": [
+            {
+              "MetricIntervalLowerBound": 0,
+              "ScalingAdjustment": 1
+            }
+          ]
+        }
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy"
+    },
+    "TargetGroup": {
+      "Properties": {
+        "HealthCheckIntervalSeconds": 10,
+        "HealthCheckPath": "/",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckTimeoutSeconds": 5,
+        "HealthyThresholdCount": 2,
+        "Matcher": {
+          "HttpCode": "200-299"
+        },
+        "Port": 80,
+        "Protocol": "HTTP",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "TaskDefinition": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "SOME_ENV_VAR",
+                "Value": "Exposed"
+              },
+              {
+                "Name": "SOME_OTHER_VAR",
+                "Value": "desopxE"
+              }
+            ],
+            "Essential": true,
+            "Image": "tutum/hello-world",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "CloudWatchLogsGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "Memory": 128,
+            "Name": "helloworld2-service",
+            "PortMappings": [
+              {
+                "ContainerPort": 80
+              }
+            ]
+          }
+        ],
+        "Family": "helloworld2-service"
+      },
+      "Type": "AWS::ECS::TaskDefinition"
+    },
+    "CloudFormationDummyResource": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Metadata": {
+        "Comment": "Resource to update stack even if there are no changes",
+        "GitCommitHash": "dd75084d287c8ef13c57b1de31ca3316d09b1fa8"
+      }
+    }
+  }
+}
