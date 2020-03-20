@@ -7,8 +7,8 @@ require "aws-sdk"
 require_relative "../aws_helper/main"
 
 Dotenv.load(".env.private")
-Dotenv.load(".env.dependencies")
-raise "CLOUDFORMATIONBUCKET not found in DependencyStack outputs" unless ENV["CLOUDFORMATIONBUCKET"]
+Dotenv.load(".env.dependencies.#{ENV["ENVIRONMENT"]}")
+raise "CLOUDFORMATIONBUCKET not set. Run `rake init` and `rake update` first!" unless ENV["CLOUDFORMATIONBUCKET"]
 
 env_vars = load_env_vars
 
@@ -26,7 +26,7 @@ s3_filename = get_parent_stack_s3_location(
 client = Aws::CloudFormation::Client.new
 
 parent_parameters = []
-File.open(".env.dependencies").read.each_line do |line|
+File.open(".env.dependencies.#{ENV["ENVIRONMENT"]}").read.each_line do |line|
   line.strip!
   param, value = line.split("=")
   parent_parameters.push(

@@ -11,6 +11,6 @@ source "https://rubygems.org" do
   gem "rspec-mocks", "~> 3.8"
   gem "rspec_junit_formatter", "~> 0.2"
   gem "rubocop", "~> 0.57.1"
-  gem "rubycfn", "~> 0.5.0"
+  gem "rubycfn", "~> 0.5.3"
   gem "simplecov", "~> 0.16.1"
 end

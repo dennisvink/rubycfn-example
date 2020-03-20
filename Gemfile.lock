@@ -961,7 +961,7 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.10.1)
-    rubycfn (0.5.0)
+    rubycfn (0.5.3)
       activesupport (~> 5.1.5)
       dotenv (~> 2.4.0)
       json (~> 2.1.0)
@@ -1009,7 +1009,7 @@ DEPENDENCIES
   rspec-mocks (~> 3.8)!
   rspec_junit_formatter (~> 0.2)!
   rubocop (~> 0.57.1)!
-  rubycfn (~> 0.5.0)!
+  rubycfn (~> 0.5.3)!
   simplecov (~> 0.16.1)!
 
 BUNDLED WITH
